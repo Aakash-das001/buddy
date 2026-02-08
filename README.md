@@ -98,6 +98,8 @@
             z-index: 10;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 4px solid rgba(255, 255, 255, 0.8);
+            margin: 20px auto;
+            min-height: auto;
         }
 
         .card::before {
@@ -277,6 +279,13 @@
             width: 100%;
             justify-content: center;
             position: relative;
+            min-height: 50px;
+        }
+
+        @media (max-width: 480px) {
+            .btn-group {
+                min-height: 120px;
+            }
         }
 
         .btn {
@@ -395,13 +404,18 @@
         }
 
         /* Responsive design */
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
             .card {
-                padding: 40px 25px;
+                padding: 35px 25px;
+                max-width: 95%;
             }
             
             h1 {
-                font-size: 1.9rem;
+                font-size: 1.8rem;
             }
             
             .gif-container {
@@ -409,9 +423,147 @@
                 height: 140px;
             }
             
+            .big-emoji {
+                font-size: 4rem;
+            }
+            
             .btn {
                 padding: 12px 25px;
                 font-size: 1rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .poem-line {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 20px;
+                border-radius: 25px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 12px;
+            }
+            
+            .gif-container {
+                width: 120px;
+                height: 120px;
+                border: 4px solid #ffe0e6;
+                margin-bottom: 20px;
+            }
+            
+            .big-emoji {
+                font-size: 3.5rem;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.95rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn-yes, .btn-no {
+                width: 100%;
+            }
+            
+            p {
+                font-size: 0.95rem;
+                margin-bottom: 20px;
+            }
+            
+            .poem-line {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+            
+            .progress-dots {
+                margin-top: 20px;
+                gap: 8px;
+            }
+            
+            .dot {
+                width: 8px;
+                height: 8px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .card {
+                padding: 25px 15px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .gif-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .big-emoji {
+                font-size: 3rem;
+            }
+            
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            
+            p {
+                font-size: 0.9rem;
+            }
+            
+            .poem-line {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .card {
+                padding: 20px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .gif-container {
+                width: 100px;
+                height: 100px;
+                margin-bottom: 15px;
+            }
+            
+            .big-emoji {
+                font-size: 3rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+            
+            p {
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+            }
+            
+            .btn {
+                padding: 8px 20px;
+            }
+            
+            .progress-dots {
+                margin-top: 15px;
             }
         }
 
@@ -566,16 +718,35 @@
             const newScale = Math.max(0.5, 1 - (noButtonClickCount * 0.1));
             btn.style.transform = `scale(${newScale})`;
             
-            // Random position within button group
-            const maxX = btnGroup.offsetWidth - btn.offsetWidth - 10;
-            const maxY = 100; // Allow vertical movement
+            // On mobile, make it simpler - just move within safer bounds
+            const isMobile = window.innerWidth <= 768;
             
-            const randomX = Math.random() * maxX;
-            const randomY = (Math.random() - 0.5) * maxY;
+            if (isMobile) {
+                // Simpler movement for mobile
+                const positions = [
+                    { left: '10px', top: '0px' },
+                    { left: 'auto', right: '10px', top: '0px' },
+                    { left: '50%', top: '60px', transform: `translateX(-50%) scale(${newScale})` },
+                    { left: '10px', top: '60px' },
+                    { left: 'auto', right: '10px', top: '60px' }
+                ];
+                
+                const pos = positions[noButtonClickCount % positions.length];
+                btn.style.position = 'absolute';
+                Object.assign(btn.style, pos);
+            } else {
+                // Desktop version - more dynamic movement
+                const maxX = btnGroup.offsetWidth - btn.offsetWidth - 10;
+                const maxY = 100;
+                
+                const randomX = Math.random() * maxX;
+                const randomY = (Math.random() - 0.5) * maxY;
+                
+                btn.style.position = 'absolute';
+                btn.style.left = randomX + 'px';
+                btn.style.top = randomY + 'px';
+            }
             
-            btn.style.position = 'absolute';
-            btn.style.left = randomX + 'px';
-            btn.style.top = randomY + 'px';
             btn.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             
             // After several attempts, change button text
